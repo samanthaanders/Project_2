@@ -20,7 +20,7 @@ while True:
             opponent_move = "paper"
         else:
             opponent_move = "scissors"
-        print("Opponent move: " + str(opponent_move))
+        print("Opponent move:", opponent_move)
 
         if my_move == opponent_move:
             print("It's a tie!")
