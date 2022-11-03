@@ -14,8 +14,11 @@ start_time = 0
 end_time = 0
 difference = 0
 
-def create_date_time(start_time): #removed start time as a parameter
-   current_date = datetime.datetime.now()
+def create_date_time(start_time): 
+   hours = start_time.split(":")[0]
+   minutes = start_time.split(":")[1]
+   seconds = 0
+   current_date = datetime.time(int(hours), int(minutes), seconds)
    return current_date 
 
 #def set_interval(func, sec):
@@ -29,6 +32,7 @@ def create_date_time(start_time): #removed start time as a parameter
 
 def set_interval(): 
     date_now = datetime.datetime.now()
+    time_now = date_now.strftime("%H:%M:%S")
     weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     weekday_number = date_now.strftime("%w")
     weekday = weekdays[int(weekday_number)]
@@ -37,20 +41,20 @@ def set_interval():
     if int(hour) > 11:
         ampm = "PM"
     if int(hour) > 12:
-        hour = hour - 12
+        hour = int(hour) - 12
     minute = date_now.strftime("%M")
     if int(minute) < 10:
         minute = "0" + minute
  
     day = tk.Label(text=weekday)
-    date = tk.Label(text = date_now) # removed .split()
+    date = tk.Label(text = str(date_now).split(" ")[0]) 
     time = tk.Label (text = (hour, ":", minute, " ", ampm))
     period_countdown = tk.Label(foreground = "blue")
 
-    if (date_now == 0) or (date_now == 6):
+    if (date_now.strftime("%w") == 0) or (date_now.strftime("%w") == 6):
         window.configure(bg = "202020")
     else:
-        if date_now == 3:
+        if date_now.strftime("%w") == 3:
             start_times = ["8:30","8:35","9:46","9:53","11:04","11:48","12:59","13:06","14:17"]
         else:
             start_times = ["8:30","8:35","10:02","10:09","11:36","12:15","13:43","13:50","15:17"]
@@ -58,8 +62,8 @@ def set_interval():
         for i in periods:
             start_time = create_date_time(start_times[x])
             end_time = create_date_time(start_times[x + 1])
-            if (date_now > start_time) and (date_now < end_time):
-                difference = end_time - date_now
+            if (time_now > str(start_time)) and (time_now < str(end_time)):
+                difference = str(end_time) - time_now
                 period = periods[i]
                 break
             else:
@@ -87,10 +91,12 @@ def set_interval():
         period = tk.Label(text = period, foreground = "blue")
 
     # reload each morining for an update
-    date.pack()
     day.pack()
+    date.pack()
     time.pack()
+    period.pack()
     period_countdown.pack()
+    window.geometry("900x500")
     window.mainloop()
 1000
 
