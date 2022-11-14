@@ -4,6 +4,14 @@ from math import trunc
 import string
 import threading
 import tkinter as tk
+import time
+import pygame
+
+pygame.init()
+theFont = pygame.font.Font(None, 72)
+clock = pygame.time.Clock()
+screen = pygame.display.set_mode([320, 200])
+pygame.display.set_caption('Pi Time')
 
 window = tk.Tk()
 
@@ -12,8 +20,7 @@ periods = ["Warning", "Period 1","Break 1","Period 2","Lunch","Period 3","Break 
 period = 0 
 start_time = 0
 end_time = 0
-difference = 0
-running = True 
+difference = 0 
 
 def create_date_time(start_time): 
    hours = start_time.split(":")[0]
@@ -32,7 +39,7 @@ def create_date_time(start_time):
 
 
 def set_interval(): 
-    while running == True:
+    while True:
         print('testing')
         date_now = datetime.datetime.now()
         time_now = date_now.strftime("%H:%M:%S")
@@ -49,12 +56,21 @@ def set_interval():
         if int(minute) < 10:
             minute = "0" + minute
         
-
+        # new clock
+        clock.tick(1)
+        theTime=time.strftime("%H:%M:%S", time.localtime())
+        timeText=theFont.render(str(theTime), True,(0,0,0),(255,255,255))
+        screen.blit(timeText, (80,60))
+        #colour = (0,0,0)
+        #screen.fill(colour)
+        pygame.display.update()
+        
+        
         day = tk.Label(text=weekday)
         date = tk.Label(text = str(date_now).split(" ")[0]) 
         displayTheTime = tk.StringVar()
         displayTheTime.set((hour, ":", minute, " ", ampm))
-        time = tk.Label(textvariable = displayTheTime)
+        #time = tk.Label(textvariable = displayTheTime)
         period_countdown = tk.Label(foreground = "blue")
 
         if (date_now.strftime("%w") == 0) or (date_now.strftime("%w") == 6):
@@ -99,14 +115,14 @@ def set_interval():
         # reload each morining for an update
         day.pack()
         date.pack()
-        time.pack()
+        #time.pack()
         period.pack()
         period_countdown.pack()
         window.geometry("900x500")
         window.mainloop()
         #set_interval()
     
-
-set_interval()
+while True:
+    set_interval()
 
 
