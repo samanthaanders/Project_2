@@ -5,12 +5,14 @@ import string
 import threading
 import tkinter as tk
 import time
+import sys
+from pygame.locals import *
 import pygame
 
 pygame.init()
 theFont = pygame.font.Font(None, 72)
 clock = pygame.time.Clock()
-screen = pygame.display.set_mode([320, 200])
+screen = pygame.display.set_mode((900, 500))
 pygame.display.set_caption('Pi Time')
 
 window = tk.Tk()
@@ -18,6 +20,7 @@ window = tk.Tk()
 periods = ["Warning", "Period 1","Break 1","Period 2","Lunch","Period 3","Break 2","Period 4"]
 
 period = 0 
+showPeriod = ""
 start_time = 0
 end_time = 0
 difference = 0 
@@ -58,20 +61,25 @@ def set_interval():
         
         # new clock
         clock.tick(1)
-        theTime=time.strftime("%H:%M:%S", time.localtime())
+        theTime = int(hour), ":", int(minute), ampm
+        #displayTime = theTime.split(",")[0]
         timeText=theFont.render(str(theTime), True,(0,0,0),(255,255,255))
-        screen.blit(timeText, (80,60))
+        screen.blit(timeText, (80,150))
         #colour = (0,0,0)
         #screen.fill(colour)
         pygame.display.update()
         
         
-        day = tk.Label(text=weekday)
-        date = tk.Label(text = str(date_now).split(" ")[0]) 
-        displayTheTime = tk.StringVar()
-        displayTheTime.set((hour, ":", minute, " ", ampm))
+        day = theFont.render(weekday, True, (0,0,0), (255,255,255))
+        screen.blit(day, (80,60))
+        date = theFont.render((str(date_now).split(" ")[0]), True, (0,0,0), (255,255,255)) 
+        screen.blit(date, (80,105))
+        #theTime = hour, ":", int(minute), ampm
+        #displayTheTime = theFont.render(str(theTime), True, (0,0,0), (255,255,255))
         #time = tk.Label(textvariable = displayTheTime)
-        period_countdown = tk.Label(foreground = "blue")
+        period_countdown = theFont.render("0", True, (0,0,250), (255,255,255))
+        screen.blit(period_countdown, (80,200))
+        pygame.display.update()
 
         if (date_now.strftime("%w") == 0) or (date_now.strftime("%w") == 6):
             window.configure(bg = "202020")
@@ -102,27 +110,45 @@ def set_interval():
             if hours > 0:
                 if minutes < 10:
                     minutes = "0" + minutes
-                period_countdown = tk.Label(text = (hours, ":", minutes, ":", seconds))
+                theTime = (hours, ":", minutes, ":", seconds)
+                period_countdown = theFont.render(str(theTime),True,(0,0,250), (255,255,255))
+                pygame.display.update()
             else:
-                period_countdown = tk.Label(text = (minutes, ":", seconds))
+                theTime = (minutes, ":", seconds)
+                period_countdown = theFont.render(str(theTime), True, (0,0,250), (255,255,255))
                 if minutes < 2:
-                    period_countdown = tk.Label(foreground = "yellow")
+                    period_countdown = theFont.render(str(theTime), True, (255,255,0), (255,255,255))
                 if (minutes == 0) and (seconds == 0):
-                    period_countdown = tk.Label(foreground = "white")
+                    period_countdown = theFont.render(str(theTime), True, (0,0,0), (255,255,255))
             
-            period = tk.Label(text = period, foreground = "blue")
+            showPeriod = theFont.render(str(period), True, (0,0,255), (255,255,255))
 
         # reload each morining for an update
-        day.pack()
-        date.pack()
+        #day.pack()
+        #date.pack()
         #time.pack()
-        period.pack()
-        period_countdown.pack()
-        window.geometry("900x500")
-        window.mainloop()
+        #period.pack()
+        #period_countdown.pack()
+        #window.geometry("900x500")
+        #window.mainloop()
         #set_interval()
+
+        screen.blit(timeText, (80,150))
+        screen.blit(day, (80,60))
+        screen.blit(date, (80,105))
+        screen.blit(showPeriod , (80,200))
+        screen.blit(period_countdown, (80,250))
+
+        pygame.display.update()
+
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+
+
     
 while True:
     set_interval()
-
+    
 
