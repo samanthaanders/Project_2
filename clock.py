@@ -1,4 +1,5 @@
 import datetime
+from datetime import date
 #from datetime import datetime
 from math import trunc
 import string
@@ -43,9 +44,9 @@ def create_date_time(start_time):
 
 def set_interval(): 
     while True:
-        print('testing')
         date_now = datetime.datetime.now()
-        time_now = date_now.strftime("%H:%M:%S")
+        #time_now = date_now.strftime("%H:%M:%S")
+        time_now = datetime.time(int(date_now.strftime("%H")), int(date_now.strftime("%M")), int(date_now.strftime("%S")))
         weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
         weekday_number = date_now.strftime("%w")
         weekday = weekdays[int(weekday_number)] 
@@ -61,7 +62,7 @@ def set_interval():
         
         # new clock
         clock.tick(1)
-        theTime = int(hour), ":", int(minute), ampm
+        theTime = hour + ":" + minute + " " + ampm
         #displayTime = theTime.split(",")[0]
         timeText=theFont.render(str(theTime), True,(0,0,0),(255,255,255))
         screen.blit(timeText, (80,150))
@@ -84,7 +85,7 @@ def set_interval():
         if (date_now.strftime("%w") == 0) or (date_now.strftime("%w") == 6):
             window.configure(bg = "202020")
         else:
-            if date_now.strftime("%w") == 3:
+            if int(date_now.strftime("%w")) == 3:
                 start_times = ["8:30","8:35","9:46","9:53","11:04","11:48","12:59","13:06","14:17"]
             else:
                 start_times = ["8:30","8:35","10:02","10:09","11:36","12:15","13:43","13:50","15:17"]
@@ -92,8 +93,8 @@ def set_interval():
             for i in periods:
                 start_time = create_date_time(start_times[x])
                 end_time = create_date_time(start_times[x + 1])
-                if (time_now > str(start_time)) and (time_now < str(end_time)):
-                    #difference = (end_time - time_now)
+                if (time_now > start_time) and (time_now < end_time):
+                    #difference = datetime.datetime.combine(datetime.time.now(), end_time) - datetime.datetime.combine(datetime.time.now(), date_now)
                     period = periods[x]
                     break
                 else:
@@ -138,6 +139,7 @@ def set_interval():
         screen.blit(date, (80,105))
         screen.blit(showPeriod , (80,200))
         screen.blit(period_countdown, (80,250))
+
 
         pygame.display.update()
 
