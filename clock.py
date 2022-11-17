@@ -1,6 +1,6 @@
 import datetime
 from datetime import date
-#from datetime import datetime
+from datetime import timedelta
 from math import trunc
 import string
 import threading
@@ -11,10 +11,14 @@ from pygame.locals import *
 import pygame
 
 pygame.init()
-theFont = pygame.font.Font(None, 72)
+theFont = pygame.font.Font(None, 70)
+big_font = pygame.font.Font(None, 150)
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((900, 500))
-pygame.display.set_caption('Pi Time')
+white = (255,255,255)
+screen.fill(white)
+pygame.display.flip()
+pygame.display.set_caption('clock')
 
 window = tk.Tk()
 
@@ -30,7 +34,11 @@ def create_date_time(start_time):
    hours = start_time.split(":")[0]
    minutes = start_time.split(":")[1]
    seconds = 0
-   current_date = datetime.time(int(hours), int(minutes), seconds)
+   date = datetime.date.today()
+   year = date.strftime("%Y")
+   month = date.strftime("%m")
+   day = date.strftime("%d")
+   current_date = datetime.datetime(int(year), int(month), int(day), int(hours), int(minutes), seconds)
    return current_date 
 
 #def set_interval(func, sec):
@@ -46,7 +54,7 @@ def set_interval():
     while True:
         date_now = datetime.datetime.now()
         #time_now = date_now.strftime("%H:%M:%S")
-        time_now = datetime.time(int(date_now.strftime("%H")), int(date_now.strftime("%M")), int(date_now.strftime("%S")))
+        time_now = datetime.datetime(int((datetime.date.today()).strftime("%Y")),int((datetime.date.today()).strftime("%m")),int((datetime.date.today()).strftime("%d")),int(date_now.strftime("%H")), int(date_now.strftime("%M")), int(date_now.strftime("%S")))
         weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
         weekday_number = date_now.strftime("%w")
         weekday = weekdays[int(weekday_number)] 
@@ -62,24 +70,20 @@ def set_interval():
         
         # new clock
         clock.tick(1)
-        theTime = hour + ":" + minute + " " + ampm
+        theTime = str(hour) + ":" + minute + " " + ampm
         #displayTime = theTime.split(",")[0]
-        timeText=theFont.render(str(theTime), True,(0,0,0),(255,255,255))
-        screen.blit(timeText, (80,150))
+        timeText=big_font.render(str(theTime), True,(0,0,0),(255,255,255))
         #colour = (0,0,0)
         #screen.fill(colour)
         pygame.display.update()
         
         
         day = theFont.render(weekday, True, (0,0,0), (255,255,255))
-        screen.blit(day, (80,60))
         date = theFont.render((str(date_now).split(" ")[0]), True, (0,0,0), (255,255,255)) 
-        screen.blit(date, (80,105))
         #theTime = hour, ":", int(minute), ampm
         #displayTheTime = theFont.render(str(theTime), True, (0,0,0), (255,255,255))
         #time = tk.Label(textvariable = displayTheTime)
         period_countdown = theFont.render("0", True, (0,0,250), (255,255,255))
-        screen.blit(period_countdown, (80,200))
         pygame.display.update()
 
         if (date_now.strftime("%w") == 0) or (date_now.strftime("%w") == 6):
@@ -94,18 +98,25 @@ def set_interval():
                 start_time = create_date_time(start_times[x])
                 end_time = create_date_time(start_times[x + 1])
                 if (time_now > start_time) and (time_now < end_time):
-                    #difference = datetime.datetime.combine(datetime.time.now(), end_time) - datetime.datetime.combine(datetime.time.now(), date_now)
+                    #end_time = datetime.datetime(int(date_now.strftime("%Y")), int(date_now.strftime("%m")), int(date_now.strftime("%D")), (end_time))
+                    difference = end_time - date_now 
                     period = periods[x]
                     break
                 else:
                     difference = 0 # changed from ""
                     period = 0
                 x = x + 1
+            
+            #difference = int(difference)
+            #hours = trunc((difference) % (1000 * 60 * 60 * 24) / (1000 * 60 * 60))
+            #minutes = trunc((difference % (1000 * 60 * 60)) / (1000 * 60))
+            #seconds = trunc((difference % (1000 * 60)) / 1000)
+            
         
-            hours = trunc(int(difference) % (1000 * 60 * 60 * 24) / (1000 * 60 * 60))
-            minutes = trunc((difference % (1000 * 60 * 60)) / (1000 * 60))
-            seconds = trunc((difference % (1000 * 60)) / 1000)
-
+            #if difference < 2:
+                #period_countdown = theFont.render(str(theTime), True,(0,0,255), (255,255,255))
+            
+            '''
             if seconds < 10:
                 seconds = "0", seconds
             if hours > 0:
@@ -121,7 +132,8 @@ def set_interval():
                     period_countdown = theFont.render(str(theTime), True, (255,255,0), (255,255,255))
                 if (minutes == 0) and (seconds == 0):
                     period_countdown = theFont.render(str(theTime), True, (0,0,0), (255,255,255))
-            
+            '''
+            period_countdown = theFont.render(str(difference).split(".")[0], True, (0,0,0), (255,255,255))
             showPeriod = theFont.render(str(period), True, (0,0,255), (255,255,255))
 
         # reload each morining for an update
@@ -134,11 +146,11 @@ def set_interval():
         #window.mainloop()
         #set_interval()
 
-        screen.blit(timeText, (80,150))
-        screen.blit(day, (80,60))
-        screen.blit(date, (80,105))
-        screen.blit(showPeriod , (80,200))
-        screen.blit(period_countdown, (80,250))
+        screen.blit(day, (350,30))
+        screen.blit(date, (340,90))
+        screen.blit(timeText, (270,150))
+        screen.blit(showPeriod , (360,270))
+        screen.blit(period_countdown, (370,330))
 
 
         pygame.display.update()
