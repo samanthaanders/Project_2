@@ -65,8 +65,6 @@ def set_interval():
         if int(hour) > 12:
             hour = int(hour) - 12
         minute = date_now.strftime("%M")
-        if int(minute) < 10:
-            minute = "0" + minute
         
         # new clock
         clock.tick(1)
@@ -112,9 +110,24 @@ def set_interval():
             #minutes = trunc((difference % (1000 * 60 * 60)) / (1000 * 60))
             #seconds = trunc((difference % (1000 * 60)) / 1000)
             
-        
-            #if difference < 2:
-                #period_countdown = theFont.render(str(theTime), True,(0,0,255), (255,255,255))
+            #two = datetime.timedelta(int((datetime.date.today()).strftime("%Y")),int((datetime.date.today()).strftime("%m")),int((datetime.date.today()).strftime("%d")), 0, 2, 0)
+            
+            two = datetime.timedelta(0, 120, 0)
+            if difference < two:
+                period_countdown = theFont.render(str(difference).split(".")[0], True,(255,255,0), (255,255,255))
+            else:
+                period_countdown = theFont.render(str(difference).split(".")[0], True, (0,0,255), (255,255,255))
+            
+            #difference = datetime.timedelta(0,1200,0)
+            one = datetime.timedelta(0, 3600, 0)
+            if difference < one:
+                period_countdown = theFont.render((str(difference).split(".")[0]).split("0:")[1], True, (0,0,255), (255,255,255))
+                if (str(difference).split(".")[0]).split("0:")[1].__contains__(":") == False:
+                    period_countdown = theFont.render((str(difference).split(".")[0]).split("0:")[1] + "0" + ":" + (str(difference).split(".")[0]).split("0:")[2], True, (0,0,255), (255,255,255))    
+                ten_min = datetime.timedelta(0,600, 0)
+                if difference < ten_min:
+                    period_countdown = theFont.render((str(difference).split(".")[0]).split("0:0")[1], True, (0,0,255), (255,255,255))
+
             
             '''
             if seconds < 10:
@@ -133,7 +146,7 @@ def set_interval():
                 if (minutes == 0) and (seconds == 0):
                     period_countdown = theFont.render(str(theTime), True, (0,0,0), (255,255,255))
             '''
-            period_countdown = theFont.render(str(difference).split(".")[0], True, (0,0,0), (255,255,255))
+
             showPeriod = theFont.render(str(period), True, (0,0,255), (255,255,255))
 
         # reload each morining for an update
@@ -146,11 +159,13 @@ def set_interval():
         #window.mainloop()
         #set_interval()
 
-        screen.blit(day, (350,30))
-        screen.blit(date, (340,90))
-        screen.blit(timeText, (270,150))
-        screen.blit(showPeriod , (360,270))
-        screen.blit(period_countdown, (370,330))
+        screen.blit(day, ((450 - (day.get_width() / 2)),30))
+        screen.blit(date, ((450 - (date.get_width() / 2)),90))
+        screen.blit(timeText, ((450 - (timeText.get_width() / 2)),150))
+        screen.blit(showPeriod , ((450 - (showPeriod.get_width() / 2)),270))
+        screen.blit(period_countdown, ((450 - (period_countdown.get_width() / 2)),330))
+
+        
 
 
         pygame.display.update()
