@@ -1,10 +1,7 @@
 import datetime
 from datetime import date
 from datetime import timedelta
-from math import trunc
 import string
-import threading
-import tkinter as tk
 import time
 import sys
 from pygame.locals import *
@@ -19,8 +16,6 @@ white = (255,255,255)
 screen.fill(white)
 pygame.display.flip()
 pygame.display.set_caption('clock')
-
-window = tk.Tk()
 
 periods = ["Warning", "Period 1","Break 1","Period 2","Lunch","Period 3","Break 2","Period 4"]
 
@@ -41,19 +36,10 @@ def create_date_time(start_time):
    current_date = datetime.datetime(int(year), int(month), int(day), int(hours), int(minutes), seconds)
    return current_date 
 
-#def set_interval(func, sec):
-    #def func_wrapper():
-       # set_interval(func, sec)
-        #func()
-   # t = threading.Timer(sec, func_wrapper)
-   # t.start()
-   # return t
-
 
 def set_interval(): 
     while True:
         date_now = datetime.datetime.now()
-        #time_now = date_now.strftime("%H:%M:%S")
         time_now = datetime.datetime(int((datetime.date.today()).strftime("%Y")),int((datetime.date.today()).strftime("%m")),int((datetime.date.today()).strftime("%d")),int(date_now.strftime("%H")), int(date_now.strftime("%M")), int(date_now.strftime("%S")))
         weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
         weekday_number = date_now.strftime("%w")
@@ -66,110 +52,93 @@ def set_interval():
             hour = int(hour) - 12
         minute = date_now.strftime("%M")
         
-        # new clock
+        # set up the clock
         clock.tick(1)
         theTime = str(hour) + ":" + minute + " " + ampm
-        #displayTime = theTime.split(",")[0]
         timeText=big_font.render(str(theTime), True,(0,0,0),(255,255,255))
-        #colour = (0,0,0)
-        #screen.fill(colour)
         pygame.display.update()
-        
         
         day = theFont.render(weekday, True, (0,0,0), (255,255,255))
         date = theFont.render((str(date_now).split(" ")[0]), True, (0,0,0), (255,255,255)) 
-        #theTime = hour, ":", int(minute), ampm
-        #displayTheTime = theFont.render(str(theTime), True, (0,0,0), (255,255,255))
-        #time = tk.Label(textvariable = displayTheTime)
         period_countdown = theFont.render("0", True, (0,0,250), (255,255,255))
         pygame.display.update()
 
-        if (date_now.strftime("%w") == 0) or (date_now.strftime("%w") == 6):
-            window.configure(bg = "202020")
+        # Saturday or Sunday
+        if (date_now.strftime("%w") == "0") or (date_now.strftime("%w") == "6"):
+            screen.fill(white)
+            pygame.display.flip()
         else:
+            # opportunity Wednesday
             if int(date_now.strftime("%w")) == 3:
                 start_times = ["8:30","8:35","9:46","9:53","11:04","11:48","12:59","13:06","14:17"]
             else:
                 start_times = ["8:30","8:35","10:02","10:09","11:36","12:15","13:43","13:50","15:17"]
+            
+            # test if current datetime is greater than period start time
             x = 0
             for i in periods:
                 start_time = create_date_time(start_times[x])
                 end_time = create_date_time(start_times[x + 1])
                 if (time_now > start_time) and (time_now < end_time):
-                    #end_time = datetime.datetime(int(date_now.strftime("%Y")), int(date_now.strftime("%m")), int(date_now.strftime("%D")), (end_time))
                     difference = end_time - date_now 
                     period = periods[x]
                     break
                 else:
-                    difference = 0 # changed from ""
-                    period = 0
+                    difference = datetime.timedelta(0, 0, 0) 
+                    period = " "
                 x = x + 1
             
-            #difference = int(difference)
-            #hours = trunc((difference) % (1000 * 60 * 60 * 24) / (1000 * 60 * 60))
-            #minutes = trunc((difference % (1000 * 60 * 60)) / (1000 * 60))
-            #seconds = trunc((difference % (1000 * 60)) / 1000)
-            
-            #two = datetime.timedelta(int((datetime.date.today()).strftime("%Y")),int((datetime.date.today()).strftime("%m")),int((datetime.date.today()).strftime("%d")), 0, 2, 0)
-            
+            # countdown display
+            if difference == datetime.timedelta(0, 0, 0) and start_time == create_date_time(start_times[8]):
+                color = (255,255,255)
+                period_countdown = theFont.render(str(difference).split(".")[0], True, (color), (255,255,255))
+                # hides countdown at the end of the day
+            color = 0,0,255
             two = datetime.timedelta(0, 120, 0)
             if difference < two:
-                period_countdown = theFont.render(str(difference).split(".")[0], True,(255,255,0), (255,255,255))
+                color = 255,255,0
+                period_countdown = theFont.render(str(difference).split(".")[0], True,(color), (255,255,255))
+                # sets countdown to yellow 
             else:
-                period_countdown = theFont.render(str(difference).split(".")[0], True, (0,0,255), (255,255,255))
+                color = 0,0,255
+                period_countdown = theFont.render(str(difference).split(".")[0], True, (color), (255,255,255))
             
-            #difference = datetime.timedelta(0,1200,0)
+            # remove extra 0s in the countdown time
             one = datetime.timedelta(0, 3600, 0)
             if difference < one:
-                period_countdown = theFont.render((str(difference).split(".")[0]).split("0:")[1], True, (0,0,255), (255,255,255))
+                period_countdown = theFont.render((str(difference).split(".")[0]).split("0:")[1], True, (color), (255,255,255))
                 if (str(difference).split(".")[0]).split("0:")[1].__contains__(":") == False:
-                    period_countdown = theFont.render((str(difference).split(".")[0]).split("0:")[1] + "0" + ":" + (str(difference).split(".")[0]).split("0:")[2], True, (0,0,255), (255,255,255))    
+                    period_countdown = theFont.render((str(difference).split(".")[0]).split("0:")[1] + "0" + ":" + (str(difference).split(".")[0]).split("0:")[2], True, (color), (255,255,255))    
                 ten_min = datetime.timedelta(0,600, 0)
                 if difference < ten_min:
-                    period_countdown = theFont.render((str(difference).split(".")[0]).split("0:0")[1], True, (0,0,255), (255,255,255))
+                    period_countdown = theFont.render((str(difference).split(".")[0]).split("0:0")[1], True, (color), (255,255,255))
 
-            
-            '''
-            if seconds < 10:
-                seconds = "0", seconds
-            if hours > 0:
-                if minutes < 10:
-                    minutes = "0" + minutes
-                theTime = (hours, ":", minutes, ":", seconds)
-                period_countdown = theFont.render(str(theTime),True,(0,0,250), (255,255,255))
-                pygame.display.update()
-            else:
-                theTime = (minutes, ":", seconds)
-                period_countdown = theFont.render(str(theTime), True, (0,0,250), (255,255,255))
-                if minutes < 2:
-                    period_countdown = theFont.render(str(theTime), True, (255,255,0), (255,255,255))
-                if (minutes == 0) and (seconds == 0):
-                    period_countdown = theFont.render(str(theTime), True, (0,0,0), (255,255,255))
-            '''
 
             showPeriod = theFont.render(str(period), True, (0,0,255), (255,255,255))
 
-        # reload each morining for an update
-        #day.pack()
-        #date.pack()
-        #time.pack()
-        #period.pack()
-        #period_countdown.pack()
-        #window.geometry("900x500")
-        #window.mainloop()
-        #set_interval()
+            # reload each morining for an update
+            #day.pack()
+            #date.pack()
+            #time.pack()
+            #period.pack()
+            #period_countdown.pack()
+            #window.geometry("900x500")
+            #window.mainloop()
+            #set_interval()
 
-        screen.blit(day, ((450 - (day.get_width() / 2)),30))
-        screen.blit(date, ((450 - (date.get_width() / 2)),90))
-        screen.blit(timeText, ((450 - (timeText.get_width() / 2)),150))
-        screen.blit(showPeriod , ((450 - (showPeriod.get_width() / 2)),270))
-        screen.blit(period_countdown, ((450 - (period_countdown.get_width() / 2)),330))
+            # display all text
+            screen.blit(day, ((450 - (day.get_width() / 2)),30))
+            screen.blit(date, ((450 - (date.get_width() / 2)),90))
+            screen.blit(timeText, ((450 - (timeText.get_width() / 2)),150))
+            screen.blit(showPeriod , ((450 - (showPeriod.get_width() / 2)),270))
+            screen.blit(period_countdown, ((450 - (period_countdown.get_width() / 2)),330))
 
         
 
 
         pygame.display.update()
 
+        # close the window 
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
