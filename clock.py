@@ -11,7 +11,7 @@ pygame.init()
 theFont = pygame.font.Font(None, 70)
 big_font = pygame.font.Font(None, 150)
 clock = pygame.time.Clock()
-screen = pygame.display.set_mode((900, 500))
+screen = pygame.display.set_mode((900, 500)) 
 white = (255,255,255)
 screen.fill(white)
 pygame.display.flip()
@@ -35,7 +35,6 @@ def create_date_time(start_time):
    day = date.strftime("%d")
    current_date = datetime.datetime(int(year), int(month), int(day), int(hours), int(minutes), seconds)
    return current_date 
-
 
 def set_interval(): 
     while True:
@@ -79,7 +78,7 @@ def set_interval():
             for i in periods:
                 start_time = create_date_time(start_times[x])
                 end_time = create_date_time(start_times[x + 1])
-                if (time_now > start_time) and (time_now < end_time):
+                if (time_now > start_time) and (time_now < end_time): # test !!!
                     difference = end_time - date_now 
                     period = periods[x]
                     break
@@ -113,18 +112,7 @@ def set_interval():
                 if difference < ten_min:
                     period_countdown = theFont.render((str(difference).split(".")[0]).split("0:0")[1], True, (color), (255,255,255))
 
-
             showPeriod = theFont.render(str(period), True, (0,0,255), (255,255,255))
-
-            # reload each morining for an update
-            #day.pack()
-            #date.pack()
-            #time.pack()
-            #period.pack()
-            #period_countdown.pack()
-            #window.geometry("900x500")
-            #window.mainloop()
-            #set_interval()
 
             # display all text
             screen.blit(day, ((450 - (day.get_width() / 2)),30))
@@ -133,9 +121,6 @@ def set_interval():
             screen.blit(showPeriod , ((450 - (showPeriod.get_width() / 2)),270))
             screen.blit(period_countdown, ((450 - (period_countdown.get_width() / 2)),330))
 
-        
-
-
         pygame.display.update()
 
         # close the window 
@@ -143,10 +128,7 @@ def set_interval():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-
-
     
 while True:
     set_interval()
     
-
